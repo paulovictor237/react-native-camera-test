@@ -1,0 +1,7 @@
+android
+ios
+.vscode
+node_modules
+vendor
+.bundle
+src/assets
