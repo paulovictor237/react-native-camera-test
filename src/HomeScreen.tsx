@@ -10,7 +10,7 @@ import {
 } from 'react-native-vision-camera';
 import {Worklets} from 'react-native-worklets-core';
 
-export default function App() {
+export function HomeScreen() {
   const device = useCameraDevice('front');
   const [active, setActive] = useState(false);
 
