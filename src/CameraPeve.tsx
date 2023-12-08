@@ -1,5 +1,5 @@
 import {OCRFrame, scanOCR} from '@ismaelmoreiraa/vision-camera-ocr';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import {
   useCameraPermission,
@@ -7,12 +7,27 @@ import {
   Camera,
   useCameraDevice,
   useFrameProcessor,
+  CameraPosition,
 } from 'react-native-vision-camera';
 import {Worklets} from 'react-native-worklets-core';
 
 export function CameraPeve() {
-  const device = useCameraDevice('front');
+  const [cameraType, setCameraType] = useState<CameraPosition>('front');
+  const device = useCameraDevice(cameraType);
   const [active, setActive] = useState(false);
+  const camera = useRef<Camera>(null);
+
+  const toggleCamera = () =>
+    setCameraType(type => (type === 'front' ? 'back' : 'front'));
+
+  const takePhoto = async () => {
+    try {
+      const photo = await camera.current?.takePhoto();
+      console.log('🐞 ~ photo:', photo);
+    } catch (error) {
+      console.log('🐞 ~ error:', error);
+    }
+  };
 
   const permiesion1 = useCameraPermission();
   const permiesion2 = useMicrophonePermission();
@@ -45,12 +60,13 @@ export function CameraPeve() {
     <View className="flex-1 bg-red-300">
       {active && (
         <Camera
+          ref={camera}
           style={StyleSheet.absoluteFill}
           device={device}
           photo={true}
           // fps={2}
-          pixelFormat="yuv"
-          frameProcessor={frameProcessor}
+          // pixelFormat="yuv"
+          // frameProcessor={frameProcessor}
           isActive={active}
         />
       )}
@@ -60,6 +76,12 @@ export function CameraPeve() {
           onPress={() => setActive(p => !p)}
           title={active ? 'Desativar Camera' : 'Ativar Camera'}
         />
+        {active && (
+          <>
+            <Button onPress={toggleCamera} title={'Trocar Camera'} />
+            <Button onPress={takePhoto} title={'Tirer Photo'} />
+          </>
+        )}
       </View>
 
       <View className="bg-gray-500 p-4 min-h-[140px] rounded-2xl">
